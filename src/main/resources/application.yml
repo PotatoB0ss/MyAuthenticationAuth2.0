@@ -1,0 +1,87 @@
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+
+
+spring:
+
+    datasource:
+        url: jdbc:postgresql://localhost:5432/spring_social
+        username: postgres
+        password:
+
+    jpa:
+      hibernate:
+        ddl-auto: update
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect
+          format_sql: true
+      show-sql: true
+
+
+
+    security:
+      oauth2:
+        client:
+          registration:
+            google:
+              clientId: 487218691392-jf3h24h88mvdkgr2psl2lmncueovkkj7.apps.googleusercontent.com
+              clientSecret: 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
+              redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+              scope:
+                - email
+                - profile
+
+            github:
+              clientId: Iv1.f0e6b5e97a311032
+              clientSecret: 5ccb0e00f280135e1f65a1838af5a13823ed69f9
+              redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+              scope:
+                - user:email
+                - read:user
+
+
+    mail:
+      host: localhost
+      port: 1025
+      username: hello
+      password: hello
+
+      properties:
+        mail:
+          smtp:
+            ssl:
+              trust: "*"
+            auth: true
+            starttls:
+                enable: true
+            connectiontimeout: 5000
+            timeout: 3000
+            writetimeout: 5000
+
+
+
+app:
+  auth:
+    tokenSecret: 04ca023b39512e46d0c2cf4b48d5aac61d34302994c87ed4eff225dcf3b0a218739f3897051a057f9b846a69ea2927a587044164b7bae5e1306219d50b588cb1
+    tokenExpirationMsec: 604800000
+  cors:
+    allowedOrigins: http://localhost:3000,http://localhost:8080
+  oauth2:
+    # After successfully authenticating with the OAuth2 Provider,
+    # we'll be generating an auth token for the user and sending the token to the
+    # redirectUri mentioned by the client in the /oauth2/authorize request.
+    # We're not using cookies because they won't work well in mobile clients.
+    authorizedRedirectUris:
+      - http://localhost:8080/oauth2/redirect
+      - myandroidapp://oauth2/redirect
+      - myiosapp://oauth2/redirect
+
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.example.springsocial.controller.*: TRACE
