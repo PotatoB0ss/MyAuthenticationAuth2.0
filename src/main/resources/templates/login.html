@@ -3,11 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <link rel="stylesheet" href="/css/alert.css">
     <link rel="stylesheet" href="/css/login.css">
+
     <script src="https://kit.fontawesome.com/2ef148f853.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+
+
+<!-- Remove 'active' class, this is just to show in Codepen thumbnail -->
+<div class="toast">
+
+  <div class="toast-content">
+    <i class="fas fa-solid fa-check check"></i>
+
+    <div class="message">
+      <span class="text text-1"></span>
+      <span class="text text-2"></span>
+    </div>
+  </div>
+  <i class="fa-solid fa-xmark close"></i>
+
+  <!-- Remove 'active' class, this is just to show in Codepen thumbnail -->
+  <div class="progress"></div>
+</div>
+
+
+
 
 <div class="container" id="container">
   <div class="form-container sign-up-container">
@@ -36,7 +59,7 @@
       <span>or use your account</span>
       <input type="email" id="emailLogin" placeholder="Email" />
       <input type="password" id="passwordLogin" placeholder="Password" />
-      <a href="#">Forgot your password?</a>
+      <a href="/reset">Forgot your password?</a>
       <button id="loginButton">Sign In</button>
     </form>
   </div>
