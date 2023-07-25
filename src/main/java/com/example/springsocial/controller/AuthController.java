@@ -72,7 +72,7 @@ public class AuthController {
 
         Optional<User> myUser = userRepository.findByEmail(loginRequest.getEmail());
         if(myUser.isPresent() && !myUser.get().getEmailVerified()){
-            throw new IllegalStateException("Email is not confirmed");
+            throw new IllegalStateException("Почта не подтверждена");
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -93,7 +93,7 @@ public class AuthController {
         if(userRepository.existsByEmail(signUpRequest.getEmail())) {
             Optional<User> myUser = userRepository.findByEmail(signUpRequest.getEmail());
             if(myUser.isPresent() && myUser.get().getEmailVerified()){
-                throw new BadRequestException("User with this email is already registered");
+                throw new BadRequestException("Пользователь с такой почтой уже зарегистрирован");
             }
             LocalDateTime expiredAt;
             Optional<ConfirmationToken> confirmationToken;
@@ -101,11 +101,11 @@ public class AuthController {
                 confirmationToken = confirmationTokenService.checkToken(myUser.get().getId());
                 expiredAt = confirmationToken.get().getExpiresAt();
             } catch (NoSuchElementException e){
-                throw new NoSuchElementException("This email is used by Google/Facebook/Github account use it to login");
+                throw new NoSuchElementException("Эта почта уже используется в гугл или гитхаб аккаунте, используйте его для входа");
             }
 
             if (!expiredAt.isBefore(LocalDateTime.now())) {
-                throw new IllegalStateException("You already have a token check your email");
+                throw new IllegalStateException("Проверьте почту у вас уже есть письмо для подтверждения");
             }
             confirmationTokenService.deleteToken(confirmationToken.get().getToken());
             userRepository.deleteUserById(myUser.get().getId());
@@ -143,14 +143,14 @@ public class AuthController {
                 buildEmail(signUpRequest.getName(), link));
 
         return ResponseEntity.created(location)
-                .body(new ApiResponse(true, "Check your email to complete registration"));
+                .body(new ApiResponse(true, "Проверьте почту чтобы завершить регистрацию"));
     }
 
     @GetMapping(path = "confirm")
     public RedirectView confirm(@RequestParam("token") String token) {
         if (userService.confirmToken(token).equals("confirmed")) {
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl("/");
+            redirectView.setUrl("/login?em=1");
             return redirectView;
         }
         return null;

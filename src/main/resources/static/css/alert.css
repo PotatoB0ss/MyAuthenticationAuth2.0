@@ -112,3 +112,7 @@ body {
 .toast.active ~ button {
     pointer-events: none;
 }
+
+.fa-solid.fa-circle-exclamation.fa-2xl {
+    color: red;
+}

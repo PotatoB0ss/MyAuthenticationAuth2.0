@@ -6,6 +6,13 @@ document.getElementById("loginButton").addEventListener("click", function(event)
     const toast = document.querySelector(".toast");
     const closeIcon = document.querySelector(".close");
     const progress = document.querySelector(".progress");
+    // JavaScript
+    const passwordInput = document.getElementById("passwordLogin");
+
+    const iconElement = document.getElementById('checkIcon');
+
+
+
 
     let timer1, timer2;
 
@@ -14,8 +21,11 @@ document.getElementById("loginButton").addEventListener("click", function(event)
     var password = document.getElementById("passwordLogin").value;
 
     if (email === "" || password === "") {
-        text1Element.textContent = "Error";
-        text2Element.textContent = "Input email and password";
+
+
+        text1Element.textContent = "Ошибка";
+        text2Element.textContent = "Заполните все поля";
+
 
         toast.classList.add("active");
         progress.classList.add("active");
@@ -55,37 +65,31 @@ document.getElementById("loginButton").addEventListener("click", function(event)
         dataType: "json",
         success: function(response) {
 
-                const txt1 = document.querySelector(".text-1");
-                const txt2 = document.querySelector(".text-2");
-                const toas = document.querySelector(".toast");
-                const closeIcon = document.querySelector(".close");
-                const prog = document.querySelector(".progress");
+            iconElement.className = 'fas fa-solid fa-check check';
 
-                let tm1, tm2;
+            text1Element.textContent = "Успешно";
+            text2Element.textContent = "Вы успешно авторизовались";
 
-                txt1.textContent = "Success";
-                txt2.textContent = "You have been successfully authorized";
+            toast.classList.add("active");
+            progress.classList.add("active");
 
-                toas.classList.add("active");
-                prog.classList.add("active");
+            timer1 = setTimeout(() => {
+                toast.classList.remove("active");
+            }, 5000); //1s = 1000 milliseconds
 
-                tm1 = setTimeout(() => {
-                    toas.classList.remove("active");
-                }, 5000); //1s = 1000 milliseconds
-
-                tm2 = setTimeout(() => {
-                    prog.classList.remove("active");
-                }, 5300);
+            timer2 = setTimeout(() => {
+                progress.classList.remove("active");
+            }, 5300);
 
             closeIcon.addEventListener("click", () => {
-                toas.classList.remove("active");
+                toast.classList.remove("active");
 
                 setTimeout(() => {
-                    prog.classList.remove("active");
+                    progress.classList.remove("active");
                 }, 300);
 
-                clearTimeout(tm1);
-                clearTimeout(tm2);
+                clearTimeout(timer1);
+                clearTimeout(timer2);
             });
 
         },
@@ -93,8 +97,10 @@ document.getElementById("loginButton").addEventListener("click", function(event)
         error: function(xhr, status, error) {
             var errorMessage = JSON.parse(xhr.responseText).message;
 
-                text1Element.textContent = "Error";
-                text2Element.textContent = errorMessage;
+                text1Element.textContent = "Ошибка";
+                text2Element.textContent = "Неверный логин или пароль";
+
+                passwordInput.value = "";
 
                 toast.classList.add("active");
                 progress.classList.add("active");
