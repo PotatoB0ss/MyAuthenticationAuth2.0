@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @AllArgsConstructor
@@ -27,21 +29,25 @@ public class RecoveryService {
         PasswordResetToken passwordResetToken = passwordResetTokenService
                 .getPasswordResetToken(token)
                 .orElseThrow(() ->
-                        new IllegalStateException("token not found"));
+                        new IllegalStateException("Токен не найден"));
 
 
         LocalDateTime expiredAt = passwordResetToken.getExpiresAt();
 
         if(expiredAt.isBefore(LocalDateTime.now())){
-            throw new IllegalStateException("token expired");
+            throw new IllegalStateException("Токен истёк");
         }
 
         if(passwordResetToken.isUsed()){
-            throw new IllegalStateException("token has already used");
+            throw new IllegalStateException("Токен уже использовал");
         }
 
         if(!newPass1.equals(newPass2)){
-            throw new IllegalStateException("password mismatch");
+            throw new IllegalStateException("Пароли не совпадают");
+        }
+
+        if(!isPasswordValid(newPass1)){
+            throw new IllegalStateException("Пароль содержит недопустимые символы");
         }
 
         Optional<User> user = userService.loadUserByEmail(passwordResetToken.getUser().getEmail());
@@ -51,27 +57,41 @@ public class RecoveryService {
         user.get().setPassword(encodedPassword);
         userService.save(user.get());
         passwordResetTokenService.setUsed(token);
-        return "Password has been successfully changed";
+        return "Пароль был успешно изменён";
     }
 
     protected String tokenCheck(String token){
         PasswordResetToken passwordResetToken = passwordResetTokenService
                 .getPasswordResetToken(token)
                 .orElseThrow(() ->
-                        new IllegalStateException("token not found"));
+                        new IllegalStateException("Токен не найден"));
 
         LocalDateTime expiredAt = passwordResetToken.getExpiresAt();
 
         if(expiredAt.isBefore(LocalDateTime.now())){
-            return "token expired";
+            return "Токен истёк";
         }
 
         if(passwordResetToken.isUsed()){
-            return "token has already used";
+            return "Токен уже использован";
         }
 
 
         return "the token is correct";
+    }
+
+    public static boolean isPasswordValid(String password) {
+        // Регулярное выражение для проверки отсутствия специальных символов
+        String specialCharsRegex = "[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]";
+
+        // Создаем Pattern объект для регулярного выражения
+        Pattern pattern = Pattern.compile(specialCharsRegex);
+
+        // Создаем Matcher объект для проверки строки пароля
+        Matcher matcher = pattern.matcher(password);
+
+        // Проверяем, что в пароле нет специальных символов
+        return !matcher.find();
     }
 
 }

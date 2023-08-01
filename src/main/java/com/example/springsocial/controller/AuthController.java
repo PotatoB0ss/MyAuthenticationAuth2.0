@@ -62,13 +62,15 @@ public class AuthController {
     @PostMapping("/login")
     public ApiResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
 
+        Authentication authentication;
 
-        Authentication authentication = authenticationManager.authenticate(
+        authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
+
 
         Optional<User> myUser = userRepository.findByEmail(loginRequest.getEmail());
         if(myUser.isPresent() && !myUser.get().getEmailVerified()){
@@ -84,7 +86,7 @@ public class AuthController {
         cookie.setMaxAge(maxAge);
         httpServletResponse.addCookie(cookie);
 
-        return new ApiResponse(true, "You were successfully authorized");
+        return new ApiResponse(true, "Вы успешно авторизовались");
     }
 
     @PostMapping("/signup")

@@ -1,4 +1,4 @@
-document.getElementById("registerButton").addEventListener("click", function(event) {
+document.getElementById("changePasswordButton").addEventListener("click", function(event) {
     event.preventDefault();
 
     const text1Element = document.querySelector(".text-1");
@@ -8,13 +8,12 @@ document.getElementById("registerButton").addEventListener("click", function(eve
     const progress = document.querySelector(".progress");
     const iconElement = document.getElementById('checkIcon');
 
-
     let timer1, timer2;
 
-    var name = document.getElementById("nameRegister").value;
-    var email = document.getElementById("emailRegister").value;
-    var password1 = document.getElementById("password1Register").value;
-    var password2 = document.getElementById("password2Register").value;
+
+    var oldPassword = document.getElementById("oldPassword").value;
+    var newPassword = document.getElementById("newPassword").value;
+    var confirmPassword = document.getElementById("confirmPassword").value;
 
     function isPasswordValid(password) {
         // Регулярное выражение для проверки отсутствия специальных символов
@@ -24,8 +23,8 @@ document.getElementById("registerButton").addEventListener("click", function(eve
         return !specialChars.test(password);
     }
 
+    if (oldPassword === "" || newPassword === "" || confirmPassword === "") {
 
-    if (name === "" || email === "" || password1 === "" || password2 === "") {
 
         text1Element.textContent = "Ошибка";
         text2Element.textContent = "Заполните все поля";
@@ -54,10 +53,10 @@ document.getElementById("registerButton").addEventListener("click", function(eve
         return
     }
 
-    if (name.length < 5 || password1.length < 5){
+    if (confirmPassword.length < 5 || confirmPassword.length > 32) {
 
         text1Element.textContent = "Ошибка";
-        text2Element.textContent = "Слишком короткое имя или пароль";
+        text2Element.textContent = "Новерная длинна пароля";
 
         toast.classList.add("active");
         progress.classList.add("active");
@@ -83,36 +82,7 @@ document.getElementById("registerButton").addEventListener("click", function(eve
         return
     }
 
-    if (password1.length > 32){
-
-        text1Element.textContent = "Ошибка";
-        text2Element.textContent = "Слишком большая длинна пароля";
-
-        toast.classList.add("active");
-        progress.classList.add("active");
-
-        timer1 = setTimeout(() => {
-            toast.classList.remove("active");
-        }, 5000); //1s = 1000 milliseconds
-
-        timer2 = setTimeout(() => {
-            progress.classList.remove("active");
-        }, 5300);
-
-        closeIcon.addEventListener("click", () => {
-            toast.classList.remove("active");
-
-            setTimeout(() => {
-                progress.classList.remove("active");
-            }, 300);
-
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-        });
-        return
-    }
-
-    if (!isPasswordValid(password1)) {
+    if (!isPasswordValid(newPassword)) {
 
         text1Element.textContent = "Ошибка";
         text2Element.textContent = "Пароль содержит недопустимые символы";
@@ -141,38 +111,12 @@ document.getElementById("registerButton").addEventListener("click", function(eve
         return
     }
 
-    if (!email.includes("@")){
+
+
+    if (newPassword !== confirmPassword) {
 
         text1Element.textContent = "Ошибка";
-        text2Element.textContent = "Некорректный адрес электронной почты";
-
-        toast.classList.add("active");
-        progress.classList.add("active");
-
-        timer1 = setTimeout(() => {
-            toast.classList.remove("active");
-        }, 5000); //1s = 1000 milliseconds
-
-        timer2 = setTimeout(() => {
-            progress.classList.remove("active");
-        }, 5300);
-
-        closeIcon.addEventListener("click", () => {
-            toast.classList.remove("active");
-
-            setTimeout(() => {
-                progress.classList.remove("active");
-            }, 300);
-
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-        });
-        return
-    }
-
-    if (password1 !== password2) {
-        text1Element.textContent = "Ошибка";
-        text2Element.textContent = "Пароли не совпадают";
+        text2Element.textContent = "Новый пароль введён неверно в подтверждении";
 
         toast.classList.add("active");
         progress.classList.add("active");
@@ -199,34 +143,42 @@ document.getElementById("registerButton").addEventListener("click", function(eve
     }
 
     var formData = {
-        name: name,
-        email: email,
-        password: password2
+        oldPassword: oldPassword,
+        newPassword: newPassword
     };
 
+
     $.ajax({
-        url: "/auth/signup",
+        url: "/user/password-change",
         type: "POST",
         data: JSON.stringify(formData),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function(response) {
 
+            const input1 = document.getElementById("oldPassword");
+            const input2 = document.getElementById("newPassword");
+            const input3 = document.getElementById("confirmPassword");
+
+            input1.value = "";
+            input2.value = "";
+            input3.value = "";
+
             iconElement.className = 'fas fa-solid fa-check check';
 
             text1Element.textContent = "Успешно";
-            text2Element.textContent = "Проверьте почту чтобы завершить регистрацию!";
+            text2Element.textContent = "Ваш пароль был успешно изменён";
 
             toast.classList.add("active");
             progress.classList.add("active");
 
             timer1 = setTimeout(() => {
                 toast.classList.remove("active");
-            }, 15000); //1s = 1000 milliseconds
+            }, 5000); //1s = 1000 milliseconds
 
             timer2 = setTimeout(() => {
                 progress.classList.remove("active");
-            }, 15300);
+            }, 5300);
 
             closeIcon.addEventListener("click", () => {
                 toast.classList.remove("active");
@@ -238,17 +190,21 @@ document.getElementById("registerButton").addEventListener("click", function(eve
                 clearTimeout(timer1);
                 clearTimeout(timer2);
             });
-
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 3000);
         },
 
         error: function(xhr, status, error) {
             var errorMessage = JSON.parse(xhr.responseText).message;
 
-
-
-            text1Element.textContent = "Ошибка";
-            text2Element.textContent = errorMessage;
-
+            if(errorMessage === "Bad credentials"){
+                text1Element.textContent = "Ошибка";
+                text2Element.textContent = "Неверный старый пароль";
+            } else {
+                text1Element.textContent = "Ошибка";
+                text2Element.textContent = errorMessage;
+            }
 
             toast.classList.add("active");
             progress.classList.add("active");
