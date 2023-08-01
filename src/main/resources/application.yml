@@ -28,7 +28,7 @@ spring:
           registration:
             google:
               clientId: 487218691392-jf3h24h88mvdkgr2psl2lmncueovkkj7.apps.googleusercontent.com
-              clientSecret: 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
+              clientSecret: 
               redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
               scope:
                 - email
@@ -36,7 +36,7 @@ spring:
 
             github:
               clientId: Iv1.f0e6b5e97a311032
-              clientSecret: 5ccb0e00f280135e1f65a1838af5a13823ed69f9
+              clientSecret: 
               redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
               scope:
                 - user:email
@@ -65,7 +65,7 @@ spring:
 
 app:
   auth:
-    tokenSecret: 04ca023b39512e46d0c2cf4b48d5aac61d34302994c87ed4eff225dcf3b0a218739f3897051a057f9b846a69ea2927a587044164b7bae5e1306219d50b588cb1
+    tokenSecret: 
     tokenExpirationMsec: 604800000
   cors:
     allowedOrigins: http://localhost:3000,http://localhost:8080
